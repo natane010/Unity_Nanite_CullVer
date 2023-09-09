@@ -1,6 +1,8 @@
 # Unity_Nanite_CullVer
 
 ## Insall & Ref  
+下記のリポジトリを参考に作成しています。
+ライセンスなども下記も含んで確認をお願いします。  
 ```javascript
 "dependencies": 
 {
