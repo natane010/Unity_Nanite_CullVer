@@ -9,6 +9,10 @@ https://github.com/natane010/Unity_Nanite_CullVer/assets/76082003/91490d86-5e68-
 https://github.com/natane010/Unity_Nanite_CullVer/blob/main/AddFile/URPREADME.md  
 
 ## インストール・リファレンス
+
+下記がパッケージGitURPです。  
+https://github.com/natane010/Unity_Nanite_CullVer.git?path=/Assets/Faker_Nanite
+
 下記のリポジトリを参考に作成しています。  
 ライセンスなども下記も含んで確認をお願いします。  
 ```javascript
