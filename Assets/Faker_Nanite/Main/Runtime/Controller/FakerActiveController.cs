@@ -39,7 +39,7 @@ namespace TK.Nanite.Alpha
             {
                 Destroy(NaniteRuntime);
                 NaniteRuntime = null;
-                NaniteRuntime.GetComponent<FakerNaniteRuntime>().UnaniteThread.Abort();
+                NaniteRuntime.GetComponent<FakerNaniteRuntime>().NaniteThread.Abort();
             }
         }
     }

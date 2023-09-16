@@ -19,7 +19,7 @@ namespace TK.Nanite.Alpha
         public Dictionary<int, Mesh> LODs;
     }
     [Serializable]
-    class UnaniteObject
+    class NaniteObject
     {
         public int instanceID;
         public float value;
@@ -36,10 +36,10 @@ namespace TK.Nanite.Alpha
         public float MinRender = 5f;
         public float MaxRender = 50;
         Dictionary<int, Nanite> Nanites = new();
-        readonly ConcurrentQueue<UnaniteObject> ListRenderUnanites = new();
-        readonly ConcurrentQueue<UnaniteObject> Unanites = new();
-        public Thread UnaniteThread;
-        GameObject Unanite;
+        readonly ConcurrentQueue<NaniteObject> ListRenderNanites = new();
+        readonly ConcurrentQueue<NaniteObject> Unanites = new();
+        public Thread NaniteThread;
+        GameObject nanite;
         Vector3 cameraPosition;
         bool fisrt = true;
 
@@ -47,15 +47,15 @@ namespace TK.Nanite.Alpha
         {
             //DontDestroyOnLoad(gameObject);
             Nanites.Clear();
-            UnaniteThread = new Thread(new ThreadStart(RenderUnanite)) { IsBackground = true };
-            UnaniteThread.Start();
+            NaniteThread = new Thread(new ThreadStart(RenderUnanite)) { IsBackground = true };
+            NaniteThread.Start();
         }
         private void Update()
         {
-            if (!UnaniteThread.IsAlive)
+            if (!NaniteThread.IsAlive)
             {
-                UnaniteThread = new Thread(new ThreadStart(RenderUnanite)) { IsBackground = true };
-                UnaniteThread.Start();
+                NaniteThread = new Thread(new ThreadStart(RenderUnanite)) { IsBackground = true };
+                NaniteThread.Start();
             }
             foreach (var unanite in Unanites)
             {
@@ -63,7 +63,8 @@ namespace TK.Nanite.Alpha
                 {
                     if (!Nanites[unanite.instanceID].LODs.ContainsKey(unanite.quality))
                     {
-                        Mesh mesh = new() { vertices = unanite.vertices, tangents = unanite.tangents, normals = unanite.normals, triangles = unanite.triangles, uv = unanite.uv, name = "Unanite" };
+                        Mesh mesh = new() { vertices = unanite.vertices, tangents = unanite.tangents, normals 
+                            = unanite.normals, triangles = unanite.triangles, uv = unanite.uv, name = "Nanite" };
                         Nanites[unanite.instanceID].LODs.Add(unanite.quality, mesh);
                     }
                 }
@@ -73,10 +74,10 @@ namespace TK.Nanite.Alpha
                 if (fisrt)
                 {
                     fisrt = false;
-                    if (!Unanite)
+                    if (!nanite)
                     {
-                        Unanite = new GameObject("Unanite");
-                        Unanite.transform.SetAsFirstSibling();
+                        nanite = new GameObject("Nanite");
+                        nanite.transform.SetAsFirstSibling();
                         foreach (GameObject nanite in FindObjectsOfType<GameObject>())
                         {
                             if (nanite.GetComponent<MeshFilter>())
@@ -84,7 +85,9 @@ namespace TK.Nanite.Alpha
                                 int code = nanite.GetComponent<MeshFilter>().sharedMesh.GetInstanceID();
                                 if (!Nanites.ContainsKey(code))
                                 {
-                                    Nanites.Add(code, new Nanite() { quality = 10, meshFilter = nanite.GetComponent<MeshFilter>(), transform = nanite.transform, LODs = new Dictionary<int, Mesh>(), childrenMeshFilter = new List<MeshFilter>() { } });
+                                    Nanites.Add(code, new Nanite() { quality = 10, meshFilter = nanite.GetComponent<MeshFilter>(), 
+                                        transform = nanite.transform, LODs = new Dictionary<int, Mesh>(), 
+                                        childrenMeshFilter = new List<MeshFilter>() { } });
                                 }
                                 else
                                 {
@@ -95,7 +98,9 @@ namespace TK.Nanite.Alpha
                                     {
                                         if (!Nanites.ContainsKey(code2))
                                         {
-                                            Nanites.Add(code2, new Nanite() { quality = 10, meshFilter = nanite.GetComponent<MeshFilter>(), transform = nanite.transform, LODs = new Dictionary<int, Mesh>(), childrenMeshFilter = new List<MeshFilter>() { } });
+                                            Nanites.Add(code2, new Nanite() { quality = 10, meshFilter = nanite.GetComponent<MeshFilter>(), 
+                                                transform = nanite.transform, LODs = new Dictionary<int, Mesh>(), 
+                                                childrenMeshFilter = new List<MeshFilter>() { } });
                                         }
                                         else
                                         {
@@ -138,9 +143,9 @@ namespace TK.Nanite.Alpha
                             nanite1.gameObject.GetComponent<MeshRenderer>().enabled = true;
                         }
                     }
-                    if (Unanite)
-                        Destroy(Unanite);
-                    ListRenderUnanites.Clear();
+                    if (nanite)
+                        Destroy(nanite);
+                    ListRenderNanites.Clear();
                     Unanites.Clear();
                     Nanites.Clear();
                 }
@@ -151,8 +156,8 @@ namespace TK.Nanite.Alpha
         /// </summary>
         void RenderUnanite()
         {
-            Parallel.ForEach(ListRenderUnanites, unanite => {
-                if (ListRenderUnanites.TryDequeue(out _))
+            Parallel.ForEach(ListRenderNanites, unanite => {
+                if (ListRenderNanites.TryDequeue(out _))
                 {
                     var meshSimplifier = new MeshSimplifier
                     {
@@ -163,23 +168,28 @@ namespace TK.Nanite.Alpha
                     };
                     meshSimplifier.AddSubMeshTriangles(unanite.triangles);
                     meshSimplifier.SimplifyMesh(unanite.value);
-                    Unanites.Enqueue(new UnaniteObject() { instanceID = unanite.instanceID, vertices = meshSimplifier.Vertices, normals = meshSimplifier.Normals, tangents = meshSimplifier.Tangents, uv = meshSimplifier.UV1, triangles = meshSimplifier.GetSubMeshTriangles(0), value = unanite.value, quality = unanite.quality });
+                    Unanites.Enqueue(new NaniteObject() { instanceID = unanite.instanceID, vertices = meshSimplifier.Vertices, 
+                        normals = meshSimplifier.Normals, tangents = meshSimplifier.Tangents, uv = meshSimplifier.UV1, 
+                        triangles = meshSimplifier.GetSubMeshTriangles(0), value = unanite.value, quality = unanite.quality });
                 }
             });
         }
         void CreateQuality(int instanceID, Nanite nanite, int quality, float value)
         {
-            if (!ListRenderUnanites.Any(item => item.instanceID == instanceID && item.quality == quality) && !Unanites.Any(item => item.instanceID == instanceID && item.quality == quality) && !nanite.LODs.ContainsKey(quality))
+            if (!ListRenderNanites.Any(item => item.instanceID == instanceID && item.quality == quality) && 
+                !Unanites.Any(item => item.instanceID == instanceID && item.quality == quality) && !nanite.LODs.ContainsKey(quality))
                 if (nanite.meshFilter.mesh)
                 {
-                    ListRenderUnanites.Enqueue(new UnaniteObject { instanceID = instanceID, vertices = nanite.meshFilter.mesh.vertices, normals = nanite.meshFilter.mesh.normals, tangents = nanite.meshFilter.mesh.tangents, uv = nanite.meshFilter.mesh.uv, triangles = nanite.meshFilter.mesh.triangles, quality = quality, value = value });
+                    ListRenderNanites.Enqueue(new NaniteObject { instanceID = instanceID, vertices = nanite.meshFilter.mesh.vertices, 
+                        normals = nanite.meshFilter.mesh.normals, tangents = nanite.meshFilter.mesh.tangents, 
+                        uv = nanite.meshFilter.mesh.uv, triangles = nanite.meshFilter.mesh.triangles, quality = quality, value = value });
                 }
         }
         void ChangeQuality(int id, Nanite nanite, int quality)
         {
-            if (Unanite)
+            if (this.nanite)
             {
-                if (Unanite.activeSelf)
+                if (this.nanite.activeSelf)
                 {
                     if (nanite.quality != quality)
                     {
@@ -192,7 +202,7 @@ namespace TK.Nanite.Alpha
                             unanite.AddComponent<MeshRenderer>();
                             unanite.transform.position = Vector3.zero;
                             unanite.transform.rotation = Quaternion.identity;
-                            unanite.transform.parent = Unanite.transform;
+                            unanite.transform.parent = this.nanite.transform;
                         }
 
                         List<CombineInstance> combine = new();
@@ -210,7 +220,8 @@ namespace TK.Nanite.Alpha
                             }
                             else
                             {
-                                combine.Add(new CombineInstance() { mesh = nanite.LODs[quality], transform = nanite.childrenMeshFilter[i].transform.localToWorldMatrix });
+                                combine.Add(new CombineInstance() { mesh = nanite.LODs[quality], 
+                                    transform = nanite.childrenMeshFilter[i].transform.localToWorldMatrix });
                                 nanite.childrenMeshFilter[i].GetComponent<MeshRenderer>().enabled = false;
                             }
                         }
@@ -218,10 +229,11 @@ namespace TK.Nanite.Alpha
 
                         if (nanite.LODs.ContainsKey(quality))
                         {
-                            combine.Add(new CombineInstance() { mesh = nanite.LODs[quality], transform = nanite.meshFilter.transform.localToWorldMatrix });
+                            combine.Add(new CombineInstance() { mesh = nanite.LODs[quality], 
+                                transform = nanite.meshFilter.transform.localToWorldMatrix });
                             nanite.meshFilter.gameObject.GetComponent<MeshRenderer>().enabled = false;
                         }
-                        Mesh mesh = new() { name = "Unanite", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+                        Mesh mesh = new() { name = "Nanite", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
                         mesh.CombineMeshes(combine.ToArray());
                         unanite.GetComponent<MeshFilter>().sharedMesh = mesh;
                         unanite.GetComponent<MeshRenderer>().material = nanite.meshFilter.GetComponent<MeshRenderer>().material;
@@ -232,7 +244,7 @@ namespace TK.Nanite.Alpha
 
         private void OnDestroy()
         {
-            UnaniteThread.Abort();
+            NaniteThread.Abort();
         }
     }
 }
