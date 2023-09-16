@@ -8,7 +8,7 @@ public class LineCreater : MonoBehaviour
     [SerializeField] int count = 5;
     [SerializeField] GameObject go = null;
 
-    List<GameObject> Test = new List<GameObject>();
+    //static List<GameObject> Test;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,6 +18,7 @@ public class LineCreater : MonoBehaviour
     [ContextMenu("Instance")]
     void Instance()
     {
+        //Test = new List<GameObject>();
         Vector3 pos = Vector3.zero;
         for (int i = 0; i < count; i++)
         {
@@ -28,17 +29,17 @@ public class LineCreater : MonoBehaviour
                     pos = new Vector3(2 * i, 2 * j, 2 * k);
                     var ob = Instantiate(go, pos, Quaternion.identity);
                     ob.transform.parent = this.gameObject.transform;
-                    Test.Add(ob);
+                    //Test.Add(ob);
                 }
             }
         }
     }
-    [ContextMenu("Delete")]
-    void Delete()
-    {
-        foreach (var item in Test)
-        {
-            Destroy(item);
-        }
-    }
+    //[ContextMenu("Delete")]
+    //void Delete()
+    //{
+    //    foreach (var item in this.gameObject.transform.c())
+    //    {
+    //        Destroy(item);
+    //    }
+    //}
 }
