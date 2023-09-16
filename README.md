@@ -8,9 +8,6 @@ https://github.com/natane010/Unity_Nanite_CullVer/assets/76082003/91490d86-5e68-
 ## 使い方
 https://github.com/natane010/Unity_Nanite_CullVer/blob/main/AddFile/URPREADME.md  
 
-## 結果
-https://github.com/natane010/Unity_Nanite_CullVer/assets/76082003/81270896-00d8-4ce0-8b8e-5b0876ed9502　　
-
 ## インストール・リファレンス
 下記のリポジトリを参考に作成しています。  
 ライセンスなども下記も含んで確認をお願いします。  
