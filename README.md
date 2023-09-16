@@ -2,8 +2,14 @@
 - Unityの中でNaniteできたらいいなぁくらい思い付きで作成したものです。
 - 予期せぬバグや負荷、プロジェクト自体に悪い影響があるかもしれません。
 ## 作成環境
-- Unity2022.3　URP
+- Unity2022.3　URP  
+## 使い方
+https://github.com/natane010/Unity_Nanite_CullVer/blob/main/AddFile/URPREADME.md  
+
 ## 結果
+
+Uploading Unity_Nanite - SampleTestScene - Windows, Mac, Linux - Unity 2022.3.1f1_ _DX11_ 2023-09-12 14-41-05.mp4…
+
 
 ## インストール・リファレンス
 下記のリポジトリを参考に作成しています。  
