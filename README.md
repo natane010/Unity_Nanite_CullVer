@@ -1,8 +1,5 @@
 
-
-
-Uploading Unity_Nanite - SampleTestScene - Windows, Mac, Linux - Unity 2022.3.1f1_ _DX11_ 2023-09-12 14-41-05.mp4…
-
+https://youtu.be/LURyqRvZP58
 
 # Unity_Nanite
 - Unityの中でNaniteできたらいいなぁくらい思い付きで作成したものです。
